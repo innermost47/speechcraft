@@ -15,7 +15,7 @@ A FastAPI service for audio transcription and translation using OpenAI's Whisper
 
 ### Prerequisites
 
-- Python 3.8-3.11 (not 3.12)
+- Python 3.10
 - NVIDIA GPU with CUDA support
 - FFmpeg installed and in PATH
 
