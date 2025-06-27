@@ -40,19 +40,6 @@ install.bat
 
 3. **Configure environment:**
 
-```bash
-cp env.example.txt .env
-# Edit .env with your settings
-```
-
-4. **Start the server:**
-
-```bash
-python main.py
-```
-
-## Configuration
-
 Create a `.env` file from `env.example.txt`:
 
 ```env
@@ -61,13 +48,18 @@ WHISPER_API_PORT=8001
 WHISPER_API_HOST=127.0.0.1
 ```
 
-### Available Models
+- Available Models
+  - `tiny` - Fastest, lowest quality
+  - `base` - Good balance for testing
+  - `small` - Better quality
+  - `medium` - High quality
+  - `large-v2` - Best quality (recommended for production)
 
-- `tiny` - Fastest, lowest quality
-- `base` - Good balance for testing
-- `small` - Better quality
-- `medium` - High quality
-- `large-v2` - Best quality (recommended for production)
+4. **Start the server:**
+
+```bash
+python main.py
+```
 
 ## API Endpoints
 
