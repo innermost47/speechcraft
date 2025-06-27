@@ -1,0 +1,9 @@
+requests         
+openai-whisper  
+python-dotenv
+pydub
+fastapi
+uvicorn
+python-multipart
+yt_dlp
+
