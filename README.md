@@ -25,8 +25,7 @@ A FastAPI service for audio transcription and translation using OpenAI's Whisper
 
 ```bash
 git clone https://github.com/innermost47/speechcraft.git
-cd whisper-api
-python -m venv env
+cd speechcraft
 ```
 
 2. **Run installation script:**
