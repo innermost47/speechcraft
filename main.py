@@ -5,8 +5,7 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import whisper
 import torch
-from fastapi import UploadFile
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, File, Form, UploadFile, APIRouter
 from fastapi.responses import FileResponse
 import uvicorn
 import os
@@ -294,19 +293,19 @@ async def main(file: UploadFile, file_format: str):
 
 @app.post("/transcribe")
 async def transcribe_endpoint(
-    file: UploadFile, file_format: str, request: TranscribeRequest
+    file: UploadFile = File(...),
+    file_format: str = Form(...),
+    output_format: str = Form("text"),
+    task: str = Form("transcribe"),
+    save_file: bool = Form(True),
 ):
-    result = await transcribe_audio(
-        file, file_format, request.output_format, request.task
-    )
+    result = await transcribe_audio(file, file_format, output_format, task)
 
     response = {"transcription": result["content"]}
 
-    if request.save_file:
-        filename = generate_filename(file.filename, task=request.task)
-        file_path = save_content_to_file(
-            result["content"], filename, request.output_format
-        )
+    if save_file:
+        filename = generate_filename(file.filename, task=task)
+        file_path = save_content_to_file(result["content"], filename, output_format)
         response["file_saved"] = file_path
 
     return response

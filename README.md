@@ -73,7 +73,9 @@ Upload an audio file and get transcription.
 curl -X POST "http://127.0.0.1:8001/transcribe" \
   -F "file=@audio.mp3" \
   -F "file_format=mp3" \
-  -F 'request={"output_format":"srt","task":"transcribe"}'
+  -F "output_format=srt" \
+  -F "task=transcribe" \
+  -F "save_file=true"
 ```
 
 ### 2. Translate Audio File
