@@ -1,4 +1,4 @@
 .env
 env
 outputs
-*.txt
+conversation_transcribed.txt
