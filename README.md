@@ -10,6 +10,7 @@ A FastAPI service for audio transcription and translation using OpenAI's Whisper
 - **SRT subtitle generation** with precise timestamps
 - **CUDA acceleration** for faster processing
 - **Multiple output formats** (text, SRT)
+- **WhatsApp audio transcription** for chat exports with advanced filtering options
 
 ## Installation
 
@@ -115,6 +116,95 @@ curl -X POST "http://127.0.0.1:8001/translate-youtube" \
   -d '{"url": "https://www.youtube.com/watch?v=VIDEO_ID", "output_format": "srt"}'
 ```
 
+## WhatsApp Chat Transcription
+
+The `whatsapp_to_txt.py` script processes WhatsApp chat exports and transcribes all audio messages using Whisper. It supports both French and English WhatsApp exports.
+
+### Basic Usage
+
+```bash
+# Basic usage
+python whatsapp_to_txt.py whatsapp_export.txt "WhatsApp Audio"
+
+# With custom output file
+python whatsapp_to_txt.py whatsapp_export.txt "WhatsApp Audio" -o transcribed_chat.txt
+
+# With specific Whisper model
+python whatsapp_to_txt.py whatsapp_export.txt "WhatsApp Audio" -m large
+```
+
+### Advanced Options
+
+```bash
+# Start from a specific line number
+python whatsapp_to_txt.py whatsapp_export.txt "WhatsApp Audio" -l 500
+
+# Start from a specific date (DD/MM/YYYY or DD/MM/YY)
+python whatsapp_to_txt.py whatsapp_export.txt "WhatsApp Audio" -d "15/09/2024"
+
+# Start from date with short year format
+python whatsapp_to_txt.py whatsapp_export.txt "WhatsApp Audio" -d "15/09/24"
+
+# Combine multiple options
+python whatsapp_to_txt.py whatsapp_export.txt "WhatsApp Audio" -d "01/01/2024" -m large -o "from_january.txt"
+
+# Using environment variable for model
+export WHISPER_MODEL=medium
+python whatsapp_to_txt.py whatsapp_export.txt "WhatsApp Audio" -l 1000
+```
+
+### Parameters
+
+- `export_file`: WhatsApp chat export file (.txt)
+- `audio_dir`: Directory containing the audio files (.opus)
+- `-o, --output`: Output file (default: conversation_transcribed.txt)
+- `-m, --model`: Whisper model to use (tiny/base/small/medium/large)
+- `-l, --start-line`: Start transcription from specific line number
+- `-d, --start-date`: Start transcription from specific date (DD/MM/YYYY or DD/MM/YY)
+
+### How it works
+
+1. **Export your WhatsApp chat** including media files
+2. **Organize files**: Place the text export and audio folder in your project directory
+3. **Run the script**: It will:
+   - Keep all text messages unchanged
+   - Find audio messages in the format: `PTT-YYYYMMDD-WA####.opus (file attached)` or `PTT-YYYYMMDD-WA####.opus (fichier joint)`
+   - Transcribe each audio file using Whisper
+   - Replace the filename with: `Transcription of audio file [filename]: [transcribed text]`
+   - Skip lines before the specified start line or date (if provided)
+
+### Use Cases for Start Options
+
+- **Resume interrupted transcription**: Use `-l` to start from where it stopped
+- **Process recent messages only**: Use `-d` to transcribe from a specific date
+- **Partial conversation analysis**: Focus on specific time periods
+- **Large chat optimization**: Process conversations in chunks
+
+### File Structure
+
+```
+your_project/
+├── whatsapp_to_txt.py
+├── whatsapp_export.txt           # Your chat export
+├── WhatsApp Audio/               # Audio files folder
+│   ├── PTT-20240901-WA0000.opus
+│   ├── PTT-20240901-WA0001.opus
+│   └── ...
+└── conversation_transcribed.txt  # Output file
+```
+
+### Supported Audio Formats
+
+- `.opus` (WhatsApp default)
+- `.m4a`, `.mp3`, `.wav`, `.ogg` (alternative formats)
+
+### Language Support
+
+The script automatically detects and handles:
+
+- **French WhatsApp exports**: `PTT-YYYYMMDD-WA####.opus (fichier joint)`
+- **English WhatsApp exports**: `PTT-YYYYMMDD-WA####.opus (file attached)`
+
 ## Request Parameters
 
 ### File Endpoints
@@ -206,6 +296,8 @@ curl "http://127.0.0.1:8001/download/filename.srt" -O
 - Enable CUDA for GPU acceleration
 - For long videos, consider using smaller models (`medium`, `small`) for faster processing
 - SRT generation includes word-level timestamps for precise subtitle timing
+- For WhatsApp transcription, `base` or `small` models are usually sufficient for voice messages
+- Use start line/date options to process large conversations in manageable chunks
 
 ## Troubleshooting
 
@@ -227,6 +319,14 @@ python -c "import torch; print(torch.cuda.is_available())"
 - Some videos may have DRM protection (warnings are normal)
 - Try different video URLs if one fails
 - Check internet connection for download issues
+
+### WhatsApp Export Issues
+
+- Ensure audio files are in the correct directory
+- Check that the export format matches the expected pattern
+- Verify file permissions for reading audio files
+- For path issues on Windows, avoid trailing backslashes: use `"folder"` not `"folder\"`
+- Use start line option to resume if transcription fails partway through
 
 ## License
 
